@@ -1,0 +1,1891 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Reactive architecture with Angular</title>
+    <meta name="description" content="Reactive Angular">
+    <meta name="author" content="Evan Schultz">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/league.css" id="theme">
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <!-- Printing and PDF exports -->
+    <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="reveal">
+        <!-- Any section element inside of this container is displayed as a slide -->
+        <div class="slides">
+            <section>
+                <h1>Reactive Architecture</h1>
+                <h2>with Redux and Angular</h2>
+                <br><br><br><br>
+                <p>
+                    Evan Schultz 
+                </p>
+                <p>
+                <a href="mailto:evan@rangle.io">evan@rangle.io</a> / <a href="https://twitter.com/e_p82">@e_p82</a> / <a href="https://github.com/e-schultz">github.com/e-schultz</a>
+                </p>
+                <aside class="notes">
+                <ul>
+                <li>Good morning Boston</li>
+                <li>Thanks for taking the time on this last day of presentations to be with me</li>
+                <li>I'm looking forward to share with you something that I am really excited about</li>
+                </ul>
+                </aside>
+            </section>
+            <section>
+                <section>
+                    <h1>Introduction</h1>
+                    <h3>... this is me</h3>
+                    <p>
+                        <small>Created by <a href="http://www.github.com/e-schultz">Evan Schultz</a> / <a href="http://twitter.com/e_p82">@e_p82</a></small>
+                    </p>
+                    <aside class="notes">
+                    <ul>
+                        <li>Over 6 years expierence</li>
+                        <li>Many of which I worked with .NET</li>
+                        <li>Over 3 years with Angular</li>
+                        <li>Current company has focused on Angular for the last 2 years</li>
+                        <li>Over N# of projects using Angular</li>
+                        <li>Able to iterate on ideas quickly</li>
+                        <li>With all of this expierence, I have noticed some common angular problems</li>
+                    </ul>
+                </aside>
+                </section>
+
+                <section>
+                    <!-- attention getter -->
+                    <h2>Typical Angular problems</h2>
+                    <p>
+                        <ul>
+                            <li>Where is the <span class="fragment highlight-red">state</span> being held?</li>
+                            <li>What is the <span class="fragment highlight-red">state</span> of my application?</li>
+                            <li>How to maintain shared <span class="fragment highlight-red">state</span> across multiple components?</li>
+                        </ul>
+                    </p>
+                    <aside class="notes">
+                        <ul>
+                            <li>Been working with angular for over 3 years</li>
+                            <li>These are some of the common issues</li>
+                            <li>and the root of many others</li>
+                            <li>If you notice a trend - state</li>
+                            <li>But with some discipline and planning, can help minimize these issues</li>
+                        </ul>
+                        <pre style="display:none">
+                        One of the more common questions I see asked about angular, is how to keep data in sync across multipul components, and often as a result of a user action. Two way binding can only go so far, and eventually I see people suggesting solutions like $scope.$broadcast / $scope.$on to try and keep things in sync. One of the popular concepts to come from the React community is Flux, and a recent flux implementation called Redux is proving to be promising in helping solve this problem in a more sane way.
+                        </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>What if you could....</h2>
+                    <ul>
+                        <li>View the entire <span class="fragment highlight-red">state</span> of your application </li>
+                        <li>Derive your UI from this <span class="fragment highlight-red">state</span></li>
+                        <li>See how actions modified the <span class="fragment highlight-red">state</span> of your application </li>
+                    </ul>
+                    <aside class="notes">
+                    <ul>
+                    <li>What if...</li>
+                    <li>If we were able to do these things</li>
+                    <li>Do you not think it woudl help us solve...</li>
+                    <li>Going forward, we will look into how...</li>
+                    </ul>
+                    </aside>
+                </section>
+                <section>
+                    <!-- thesis -->
+                    <h1>Redux + Angular</h1>
+                    <p>
+                    How we can use Redux + Angular to create a reactive architecture that can help us solve some of these common Angular problems.
+                    </p>
+                    <aside class="notes">
+
+                        <pre style="display:none">
+                        -- 
+                        something about going forward through this presentation, we will look at how reactive architecure can help solve these problems, and provide you with a number of benifits.
+                        --
+                        During this presentation, we will look at the benifits of using redux to manage the state of your application to help achieve a reactive architecture, where you can derive the UI of your application from a global app state.
+                        </pre>
+                    </aside>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <!-- preview of main points -->
+                    <h1>What's on the agenda</h1>
+                    <ul>
+                        <li>Reactive Architecture</li>
+                        <li>Flux</li>
+                        <li>Overview of Redux</li>
+                        <li>Reducers</li>
+                        <li>ngRedux</li>
+                        <li>Actions</li>
+                        <li>Components</li>
+                    </ul>
+                    <aside class="notes">
+                        <pre>
+                        -- might ditch 'flux 101' 
+                        </pre>
+                    </aside>
+                </section>
+            </section>
+            <section>
+                <!-- what is reactive architecture -->
+                <section>
+                    <h2>Reactive Architecture</h2>
+                    <aside class="notes">
+                        <ul>
+                            <li>In many applications, components poll to see what has changed</li>
+                            <li>They keep their own undertanding of state as a result</li>
+                            <li>Reactive architecture flips this relationship</li>
+                            <li>Your application then responds to changes in state</li>
+                        </ul>
+                        <pre style="display:none">
+                    - inputs
+                    - state - transform
+                    -- transformations (a->b) _-> signa a -> signal b
+
+                    transform values as they change over time
+
+                    foldp 'fold from the past'
+
+                    merge -> take signals and merge them together
+
+                    input from the world, transform it, updating some state, merging it together
+
+                           /---[state]---\___ merge
+                    [input]-[transform]--/
+                    - signals are connected ot the world
+                    - everything is event driven
+
+                    - model; / update / view 
+
+                    ---
+                    * Modeling events as a collection, and transforming them so your application responds
+                    * An application that reacts to changes in data automatically
+                    * events trigger data changes
+                    * your application listens to those changes
+                    * tell it what you want, not how to do it
+                    </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>What is Reactive Programming?</h2>
+                    <p class="fragment">
+                        Focused on <span class="fragment highlight-red">data flows</span> and <span class="fragment highlight-red">propagation of change</span>
+                    </p>
+                    <aside class="notes">
+                        <ul>
+                            <li>Data Flow - flux-like, uni-directional</li>
+                            <li>propagation of change - components respond to changes in data</li>
+                        
+                        <li>Simplest example that most people can understand</li>
+                        <li>Like an excel spread sheet</li>
+                        <li>All sorts of information computed and derived from a small set of data</li>
+                        <li>Changing the source data, affects the rest</li>
+                        
+                            <li> UI as a function of state</li>
+                            <li> Responds to changes instead of asking for changes </li>
+                            <li> How Redux + Angular can help solve common Angular problems </li>
+                        
+                        </ul>
+                    </aside>
+                </section>
+                <section>
+                <h3>Bringing it back to Reactive Architecture</h3>
+                <ul>
+                <li>A global application state</li>
+                <li>Controlling the flow of data to and from this state</li>
+                <li>Deriving your application from this state</li>
+
+                </ul>
+                <aside class="notes">
+                <ul>
+                <li>Data flows from your global application state</li>
+                <li>Data propagates to things subcribing to it</li>
+                <li>Compute new information based on this state</li>
+                <li>Render your UI based on it</li>
+                </ul>
+                </ul>
+                </aside>
+                </section>
+            </section>
+            <section>
+                <!-- FLUX 101 -->
+                <section>
+                    <h1>What the Flux?</h1>
+                    <aside class="notes">
+                    <ul>
+                    <li>Before going into Redux, lets review flux</li>
+                    <li>Flux has an idea of stores, of which you can have many</li>
+                    <li>Stores subscribe to actions/events</li>
+                    <li>Other things listen to changes in these store</li>
+                    <li>Enforces a one-way data flow</li>
+                    </ul>
+                    </aside>
+                </section>
+                <section>
+                    <h1>Some of the challenges</h1>
+                    <ul>
+                        <li>Where does async happen?</li>
+                        <li>Where do side effects happen?</li>
+                        <li>Smart Stores vs Smart Actions</li>
+                        <li>Conceptual boilerplate</li>
+                    </ul>
+                </section>
+                <section>
+            <h2>How I got to Redux</h2>
+            <aside class="notes">
+            <ul>
+            <li>So, before getting into redux - I had an app</li>
+            <li>Typical requirement - update one thing here</li>
+            <li>3 other spots needed to know</li>
+            <li>Came up with an accidental flux-like architecture</li>
+            <li>channels with some pub-sub, mix of promises</li>
+            <li>Was ok, but I could do better</li>
+            <li>Started to look into flux implementations</li>
+            <li>Felt like a certian level of abstraction was missing</li>
+            <li>Then this guy said "Have you checked out Redux?"</li>
+            </ul>
+            </aside>
+            </section>
+            </section>
+
+            <section>
+                <!-- Redux -->
+                <section>
+                    <h1>Redux</h1>
+                    <blockquote>
+                        Redux is a predictable state container for JavaScript apps.
+                    </blockquote>
+                    <aside class="notes">
+                        <pre>
+* Redux is a great new framework
+* Has three principals that play well with reactive architecture
+* single source of truth - when responding to events, your application needs to know 'who do I trust', 
+  by having a single source of truth..?
+* state is readonly - the only way to modify state is to emit an action, to state 'what happened', 
+  this allows states to be re-built based on the history of events. 
+* mutations are done as pure functions - instead of each component keeping track of their own state, and having
+  to update their understanding of it - it responds to the new state that is returned
+                </pre>
+                    </aside>
+                </section>
+            </section>
+            <section>
+                <!-- Reducers and your application as global state -->
+                <section>
+                    <h1>Application as a global state</h1>
+                    <aside class="notes">
+                        <pre>
+                    ---- where is state ---
+                    * If you recall from the 'angular problems' earlier, trying to undersand 'Where is my appliation state'
+                    being held can become a difficult problem in traditional angular applications.
+                    * Your state tends to be scattered around the application - some state in services, some state in controllers,
+                    some state tucked away in directives, some state captured within your URL 
+                    * Things can get really confusing when these little pockets of state, need to rely on, update and be in sync
+                    with other pockets of state
+
+                    ._____________.
+                    | MenuService | ---> holds it's own bit of state
+                    '-------------'
+
+                    .------------------------.
+                    | ui-router configuration| ---> ?
+                    `------------------------'
+                    .----------------.
+                    | OrdersService  | ---> keeps track of it's own id of state
+                    `----------------'
+
+                    * When it is difficult to figure out were state is being held, it can be hard to actually determine what the
+                      state of your aplication is
+
+                    --- what is the state ---
+
+                    * Since it is diffuclt to reason about 'where is my state', it can become difficult to reason about what the
+                    state of your application actually is.
+                    * Instead of being able to have a single source of truth to understand 'here is the state of my app', you need
+                    to carry a big conceptual model in your head of what is living where, and then try to figure out how that translates
+                    into your current application state
+
+                    --- how did I get here? ---
+
+                    * Anyone who has been working with Angular for awhile, has probably run into a scenario where something, somewhere
+                    has fallen out of sync - and is no longer behaving how you expect it to, and it can be difficult to reason about why.
+                    * Worse yet - it can arise in ways that might be difficult to reproduce in a consistent manner. 
+                    * When your state is scattered around the application, affecting slices of state in various ways - trying to figure out
+                    "how did I get here" can at times be a near impossible task.
+                    * As you add features to your application, and those features all start holding onto, changing and modifying their
+                    understanding of state in their own ways - this problem starts to increase. Over time, even seemingly simple feature
+                    requests or changes can have an increasing complexity, and a cascading affect on your application in ways you didn't 
+                    expect
+
+                    --- How does global application state help ---
+
+                    * A glboal application state helps by answering the first question of "where is my state being held", you no
+                    longer have to think about where it is - as there is only one spot to look.
+                    * What is the state of my appication - since you now only have one spot to look for to understand the state of
+                    your application, it is easy to see what it is. When your state is being stored in a seralizable way - you can easily
+                    display the structure of your application
+                    * How did I get here? - While a global application state does not immediatly solve this problem, we will look at how
+                    an reactive/event driven architecture can help answer this question. We will take a look at how by keeping your events
+                    to a "history of what happened" that are applied to your state, that we can take snapshots of pre/post states 
+                    and get a better undestanding of how we got to where we are.
+                    * To see how this works, lets take a look at Reducers
+                    </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h1>Reducers</h1>
+                    <blockquote>
+                        (state, action) => state
+                    </blockquote>
+                    <aside class="notes">
+                        <pre>
+Before we bring Angular or Redux into the picture, lets take a step back and look at reducers for a second. 
+
+Essentily a reducer returns a single item after iterating through a list of items. When thinking in terms of your application state, your state is the result of a list of events applied to it over time (reactive-link in).
+</pre>
+                    </aside>
+                </section>
+                <section>
+                <h2>A simple example</h2>
+                <a class="jsbin-embed stretch" href="https://jsbin.com/waqoto/embed?js,console">JS Bin on jsbin.com</a><script src="https://static.jsbin.com/js/embed.min.js?3.35.0"></script>
+                <a href="http://tinyurl.com/simple-reducer">http://tinyurl.com/sum-reducer</a>
+                </section>
+                <aside class="notes">
+                <ul>
+                <li>What we have here, is a list of things</li>
+                <li>We want a single thing at the end</li>
+                <li>The accumulator is the final result that we want</li>
+                <li>We iterate over the items, and add it to the final result</li>
+                <li>But, what if we dont want our final thing to be the same type as our input?</li>
+                </ul>
+                </aside>
+                <section>
+                <h2>Little bit more complex</h2>
+                <a class="jsbin-embed" href="https://jsbin.com/wuralew/embed?js,console">JS Bin on jsbin.com</a><script src="https://static.jsbin.com/js/embed.min.js?3.35.0"></script>
+                <a href="http://tinyurl.com/sum-reducer-2">http://tinyurl.com/sum-reducer-2</a>
+                </section>
+                <aside class="notes">
+                <ul>
+                <li>This is very similar to the previous</li>
+                <li>But showing that your 'accumulator' can be anything</li>
+                <li>It just keeps getting passed in over and over</li>
+                <li>With new information added</li>
+                <li>Lets see how this can get applied to application state</li>
+                </ul>
+                </aside>
+                <section>
+                    <h1>TODO MVC</h1>
+                    <h3 class="fragment"><i class="fade-in grow">Reducer Edition</i></h3>
+                    <aside class="notes">
+                    <pre>
+* Todo MVC - <b>REDUCER EDITION</b>
+* Don't worry - we will get more complex after this
+* Demonstrate building a state from a sereis of events nicely
+                    </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>The reducer</h2>
+                    <pre>
+                  <code class="javascript" data-trim>
+ 
+let todoState = (state = [], action = {}) => {
+  switch (action.type) {
+  case 'TODO_ADDED':
+
+    return [action.payload, ...state];
+  case 'TODO_COMPLETED':
+
+    return state.map(todo => 
+        todo.id === action.payload.id ?
+        Object.assign({}, todo, { completed: !todo.completed }) : todo
+        );
+  default:
+    return [...state];
+  }
+
+};
+
+
+                  </code>
+                </pre>
+                    <aside class="notes">
+<ul>
+<li>This is pretty simple</li>
+<li>What we called an accumulator in our previous examples, is now state</li>
+<li>What was called a value in our previous, is now an action</li>
+<li>But the concept is the same</li>
+<li>Iterate over values, get a new accumulated value</li>
+<li>Iterate over actions, get a new state</li>
+<li>We now have a bit of logic to handle actions</li>
+<li>key thing that ... topics about flux miss</li>
+<li>two types of actions: commands, events</li>
+<li>Commands - request to do something</li>
+<li>Event - that something was done</li>
+<li>Our reducer is a reflection of past events</li>
+<li>I tend to name things to reflect this</li>
+<li>We are not adding a todo</li>
+<li>We are updating our state to reflect that a todo was added</li>
+
+</ul>                    
+                        <pre style="dispaly:none">
+Looking at this code, there isn't too much going on here. We setup an initial state, handle an action,
+and then return a new version of the state of the application. 
+
+Instead of modifying the array when adding a new ToDo, we return a new version of the state, with the new todo added.
+
+Instead of modifying the array when completing a Todo, w ereturn a new version of the array that has the flag set.
+
+You also notice that the action types are named in a way to indicate that these are things that have already happened.
+
+We are not 'adding a todo', we are updating the state to reflect that a todo was added. 
+
+The thing that is responsbile for adding the todo is another concern.
+                </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h3>The actions</h3>
+                    <pre class="stretch">
+                <code data-trim class="javascript">
+let actions = [{type: 'TODO_ADDED',
+  payload: { 
+    id: 0,
+    title: 'Start another TODO Example',
+    completed: false
+  }
+}, {
+  type: 'TODO_ADDED',
+  payload: {
+    id: 1,
+    title: 'Reconsider TODO example',
+    completed: false
+  }
+},{
+  type: 'TODO_COMPLETED',
+  payload: {
+  id: 1
+  }
+}]
+                </code>
+                </pre>
+                    <aside class="notes">
+<ul>
+<li>A distinction to make, actions can be commands, or events</li>
+<li>Commands - the request to do something</li>
+<li>Events - the thing that was done</li>
+<li>What we want to replay into our reducer, is what was done</li>
+
+</ul>                    
+                        <pre>
+
+                * As we can see here, our actions are simple, seralizable objects
+                * This allows them to be stored, seralized, saved, replayed easily - which as we go forward with our
+                  application you will see the benifits that this has.
+                </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>Putting it all together...</h2>
+                    <pre class="fragment current-visible">
+                <code data-trim  class="javascript">
+let finalState = actions
+  .reduce((state, action) =>
+    todoState(state, action), /* reducer */ 
+    []                        /* initial state */ )
+
+console.log(finalState)
+                </code>
+                </pre>
+
+                 <pre class="fragment current-visible">
+                <code data-trim  class="javascript">
+let finalState = actions.reduce(todoState, [])
+console.log(finalState)
+                </code>
+                </pre>
+                   
+                </section>
+                <section>
+                
+                    <a class="jsbin-embed" href="https://jsbin.com/gafufi/embed?js,console">JS Bin on jsbin.com</a><script src="https://static.jsbin.com/js/embed.min.js?3.35.0"></script>
+                    <a href="http://tinyurl.com/ng-redux-todo">http://tinyurl.com/ng-redux-todo</a>
+                </section>
+                <section>
+                    <h2>What's going on?</h2>
+                    <ul>
+                        <li>The state is not mutating itself</li>
+                        <li>The actions are plain JSON objects</li>
+                        <li>I reconsidered yet another TODO-MVC example</li>
+                    </ul>
+                    <aside class="notes">
+                    <ul>
+                    <li>Be careful not to mutate</li>
+                    <li>Immutable can help</li>
+                    <li>Or just by convention</li>
+                    <li>Now that we have covered the core concepts</li>
+                    <li>Lets move onto a more complex...</li>
+                    <li>And really highlight the benifits of a global..</li>
+
+                    </ul>
+                        <pre>
+                    * We are being careful to not mutate the state, and in this example trying to accomplish that convention
+                    instead of using a library like Immutable.js
+                    * This allows the things that /want/ to care about the change in state - listen to this change and handle
+                    it, instead of modifying it's understanding of state out from under it
+                    * The actions are seralizaable objects 
+                    * Most importantly, I have decided to reconsider the TodoMVC example - the benifitis of reactive programming,
+                    and using redux to derive your application from state are not well demonstrated with this. Also, do we really
+                    need another TodoMVC example?
+                    * Lets start building out a more robust example application ..blah blah yawn stuff.
+                    </pre>
+                    </aside>
+                </section>
+            </section>
+            <section data-transition="none">
+                <!-- ngRedux + angular, creating a store -->
+                <section>
+                    <h1>Welcome to TrendyBrunch</h1>
+                    <p>
+                    <a href="https://github.com/e-schultz/ng-summit-redux">https://github.com/e-schultz/ng-summit-redux</a>
+                    </p>
+                    <aside class="notes">
+                        <pre>
+                        * Using ng-redux + angular 
+                        * Sample app - TrendyBrunch 
+                        * Start with creating a store
+                        </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>Time for a quick preview...</h2>
+                </section>
+                <section>
+                    <h2>Lets start with our first reducer</h2>
+                    <pre>
+                <code calss="javascript" data-trim>
+
+import {PARTY_LEFT, PARTY_JOINED} from '../actions/lineup-actions.js';
+import * as R from 'ramda';
+
+const INITIAL_STATE = []
+
+export default function lineup(state = INITIAL_STATE, 
+    action = { }) {
+
+  switch (action.type) {
+    case PARTY_JOINED: 
+      // Ramda will return a copy of the state 
+      // instead of modifying it.
+      return R.append(action.payload)(state);
+    default: 
+        return state;
+  }
+}
+
+                </code>
+                </pre>
+                    <aside class="notes">
+                        <pre>
+* Every trendy brunch spot always seems to have a lineup 
+* So lets start with a simple lineup reducer
+* Our lineup is going to cover some basic events, joining the line, being seated, and leaving the line
+* To help with some of the data manipulation, I'll be using Ramda
+- it's a little bit like underscore or lodash, but the data comes last,
+and many of their functions will return copies of what it works on
+instead of modifying them.
+                        </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>Testing a reducer</h2>
+                    <pre class="stretch">
+                <code class="javascript" data-trim>
+
+it('should allow parties to join the lineup', () => {
+    const initialState = lineup();
+    const expectedState = [{
+      partyId: 1,
+      numberOfPeople: 2
+      }];
+
+    const partyJoined = {
+      type: PARTY_JOINED,
+      payload: {
+        partyId: 1,
+        numberOfPeople: 2
+      }
+    };
+
+    const nextState = lineup(initialState, partyJoined);
+    expect(nextState).to.deep.equal(expectedState);
+
+  });
+
+                </code>
+                </pre>
+                    <aside class="notes">
+                        <pre>
+* One of the benifits ... state be managed in this way, easy to test
+test. 
+* Can easily provide an initial state
+* We don't need to worry about setting up Angular mocks / DI, and by keeping the model in our head of
+  'events that have already happened', we can model the side-effects, such as a new ID being generated, into
+  the payload of the action
+* easy to test 
+* very little boiler plate 
+* easy to setup an initial state
+                        </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h1>Action Creators</h1>
+                    <ul>
+                        <li>Should return plain JSON objects</li>
+                        <li>.....unless using middleware</li>
+                        <li>Are where your side effects happen</li>
+                        <li>Are where you deal with async</li>
+                    </ul>
+                    <aside class="notes">
+                        <pre>
+                    * Now that we have taken a look at a basic reducer, and the tests for it. Lets look into action creators, 
+                    * With redux, unless you are using specific middleware (which I might cover later??), your action creators
+                      should be returning plain JSON objects
+                    * Your action creators are where you deal with async events, side effects - such as database calls, generating Ids,
+                      etc. 
+                    * I like to think of there being two types of actions - a command -> the request to do something, and the event
+                      -> the thing that happened. Action creators are sort of like the 'command to do something', and the naming of 
+                      the methods tend to reflect that. 'joinLine' -> command to join a line, and 'partyJoined' -> the information
+                      that indicates what has happened.
+
+                    </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>A simple action</h2>
+                    <pre>
+                      <code class="javascript" data-trim="">
+export function joinLine(numberOfPeople) {
+
+  return {
+    type: PARTY_JOINED,
+    payload: {
+      partyId: ++partyIndex,
+      numberOfPeople: parseInt(numberOfPeople, 10)
+    }
+  };
+
+}
+                      </code>
+                  </pre>
+                    <aside class="notes">
+                        <pre>
+                        * The object that eventually gets dispatched to the store should be a plain JSON object 
+                        * If you want to deal with promises/async, should use a middleware - to be covered later 
+                        * Why should async happen here - expand 
+                        * Why do side effects happen here - expand 
+                        * Now that we have a store, and a basic action - lets look at getting things hooked up into angular
+
+                        ---- stuff --
+
+                        * As part of being able to understand how your state got to where it is, and being able to snapshot where
+                        it was before/after an event has been applied, changes to your state should not cause side effects. 
+                        * For the sake of this example, we will keep track of the partyId internally within the application, but in
+                          a real world example - the partyId might have been generated by doing a call to the database. 
+                        * [do I bother going into a unit test for this one]
+                        </pre>
+                    </aside>
+                </section>
+                <section>
+                <h2>And a quick test</h2>
+                <pre>
+                <code class="javascript" data-trim>
+it('should create an action for joining the line', () => {
+  const action = lineupActions.joinLine(4);
+  const expected = {
+    type: lineupActions.PARTY_JOINED,
+    payload: {
+      partyId: 1,
+      numberOfPeople: 4
+    }
+  };
+  expect(action).to.deep.equal(expected);
+});
+
+</code>
+</pre>
+</section>
+</section>
+<section>
+<section>
+<h2>Angular + Redux = ng-redux</h2>
+<ul>
+<li>Redux - framework agonstic state manager
+    <ul>
+        <li><a href="https://github.com/rackt/redux">https://github.com/rackt/redux</a></li>
+    </ul>
+    <li>ngRedux - Angular bindings for Redux
+        <ul>
+            <li> <a href="https://github.com/wbuchwalter/ng-redux">https://github.com/wbuchwalter/ng-redux</a></li>
+        </ul>
+    </li>
+    <li>Supports DI for Middleware and Store Enhancers</li>
+    <li>Simple API to work with</li>
+    <li>Plays nice with redux-dev tools</li>
+</ul>
+<aside class="notes">
+<pre>
+* For an angular conference, it seems like we have gone a long way without seeing much angular 
+* Lets look at how to bring all of this code into the angular world 
+* bother explaining ES6/Babel/Imports?
+
+--- notes ---
+
+* So far with the code that we have covered, we have not really seen that much in ways of libraries and dependences,
+except for a little bit of light use of Immutable.js,
+* But, this code is ready to start driving a real application - and Angular starts to go from being a heavy
+framework that is the core of your application, to a lighter framework that your application hangs off of.
+* Redux is a framework agnostic state container - meaning that it can be used on it's own, with Angular, React,
+Angular 2, or other libraries. 
+* One of the exciting things that has started to happen as I've adopted redux - is a large part of my application
+has become framework agonstic. 
+* Another benifit, is when considering MVC - the controller is meant to be the glue that binds your view to your
+model, and should be very thin on logic.
+* However, over the years there has been a a certian amount of logic that always seems to find it's way into the
+controller as there is not an appropiate home for it. However, with ngRedux - this is helping me achieve that
+in a way that I didn't really think was possible before.
+* Lets take a quick preview at what we will be covering in this section
+
+                    </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>What's next</h2>
+                    <ul>
+                        <li>Setting up our reducers with Redux</li>
+                        <li>Configuring ngRedux</li>
+                        <li>Using ngRedux in our controllers, and the $ngRedux.connect API</li>
+                        <li>Components</li>
+                        <li>ngReduxUIRouter</li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Setting up the reducers</h2>
+                    <pre>
+                <code data-trim class="javascript">
+import * as redux from 'redux';
+import lineup from './lineup-reducer';
+import tables from './table-reducer';
+import {router} from 'redux-ui-router';
+import menu from './menu-reducer';
+
+const reducers = redux.combineReducers({
+  lineup,
+  tables,
+  router,
+  menu
+});
+
+export default reducers;
+
+                </code>
+                </pre>
+                </section>
+                <section>
+                    <h2>What's going on?</h2>
+                    <ul>
+                        <li>Construct a global state object</li>
+                        <li>Each reducer becomes a key in the state</li>
+                        <li>Each reducer now has a smaller area of concern</li>
+                    </ul>
+                    <aside class="notes">
+                        <pre>
+                    * If your like me, when you first hear the idea of 'one global state' instead of having multipul stores as you do
+                    with traditional FLUX, you may have had a moment of fear of 'that is going to become an unmanageable mess!',
+                    but with redux you are able to combine multipul reducers into a single object, allowing you to break out
+                    your state into smaller and smaller pieces as appropiate.
+                    * TODO: Touch on the importance of a bit of data-modelling up front?
+                    </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h3>Preview of what this state could look like...</h3>
+                    <pre class="stretch">
+                <code class="javascript" data-trim>
+{
+ 
+   "lineup":  [{
+       "partyId": 1,
+       "numberOfPeople": 5
+     }]
+   ,
+   "tables": [{
+     "id": 1,
+     "numberOfSeats": 2,
+     "status": "ORDERED",
+     "order": {
+       "pancake": 2
+     }
+   }, {
+     "id": 2,
+     "numberOfSeats": 4,
+     "status": "ORDERING",
+     "order": {
+       "pancake": 2
+     }
+   }, {
+     "id": 3,
+     "numberOfSeats": 4,
+     "status": "OCCUPIED",
+     "order": {}
+   }, {
+     "id": 4,
+     "numberOfSeats": 2,
+     "status": "CLEAN",
+     "order": {}
+   }],
+   "router": {
+     "currentState": { /** snip **/ },
+     "currentParams": {},
+     "prevState": { /** snip **/ }
+   },
+   "prevParams": {}
+ },
+ "menu": [{
+   "menuId": "pancake",
+   "description": "Stack of Pancakes",
+   "stock": 50,
+   "price": 1.99
+ }, {
+   "menuId": "fruitbowl",
+   "description": "Bowl of fresh fruit",
+   "stock": 10,
+   "price": 3.5
+ }, {
+   "menuId": "eggsbenny",
+   "description": "Eggs Benedict",
+   "stock": 30,
+   "price": 4.95
+ }, {
+   "menuId": "hashbrowns",
+   "description": "Crispy Golden Hashbrowns",
+   "stock": 10,
+   "price": 2.5
+ }]
+ }
+                </code>
+                </pre>
+                    <aside class="notes">
+<ul>
+<li>Think back to the start, problems with state</li>
+<li>Its now in one spot, no more where is it</li>
+<li>Since it's in one spot - we can now seralize it, and see it</li>
+<li>We start to solve the problems of 'where and what'</li>
+<li>If you think back to the excel example, data change, flow out</li>
+</ul>                    
+                        <pre>
+                * Earlier in the talk, I had identified that some of the problems with Angular applications is trying to 
+                understand what, and where your application state is.
+                * This here is an example of my application state after some interactions, there is little question to
+                "where" the state is, because it is a result of the reducers - and is stored in one spot.
+                * As a result, we are able to easily see what the state is also.
+                * As we go forward with building this application, we will see how we are able to build out a number
+                of rich interactions based on deriving information from this state
+                </pre>
+                    </aside>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h1>Configuring $ngRedux</h1>
+                </section>
+                <section>
+                    <h2>$ngReduxProvider</h2>
+                    <pre style="box-shadow:none; width: 100%; height: 100%">
+                <code data-trim class="javascript">
+import reducers from './reducers';
+import createLogger from 'redux-logger';
+
+const logger = createLogger({ level: 'info', collapsed: true });
+
+export default angular
+.module('app', [ngRedux, ngUiRouter])
+.config(($ngReduxProvider) => {
+  $ngReduxProvider
+    .createStoreWith(reducers       // our application state
+    , ['ngUiRouterMiddleware',      // middleware - that supports DI
+    logger                          // middleware - that doesn't need DI
+    ]);
+});
+                </code>
+                </pre>
+                    <aside class="notes">
+                        <pre>
+* $ngRedux is pretty simple to configure with your angular application, 
+* Provide it with your reducer to create a store
+* Specify the middleware, 
+* Middleware supports DI 
+* I might not get time to go in depth into middleware
+  * similiar to that in express
+  * it is a thing that happens between actions being dispatched
+  * and the result being applied to your store
+* Now that we have our reducers setup, and Angular aware of redux using ngRedux, lets look at how to hook things
+into a controller and start building out our application
+                </pre>
+                    </aside>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>$ngRedux.connecting things to Angular</h2>
+                    <ul>
+                        <li>$ngRedux.connect api</li>
+                        <li>Mapping the state to your controller</li>
+                        <li>Mapping actions to your controller</li>
+                    </ul>
+                    <aside class="notes">
+<ul>
+<li>Now that Angular knows about redux</li>
+<li>Look into the connect api</li>
+<li>Lets your components, controllers, services, etc...</li>
+<li>Handles mapping the state to your controller</li>
+<li>Handles mapping actions</li>
+</ul>                    
+                    </aside>
+                </section>
+                <section>
+                    <h3>The theory....</h3>
+                    <pre>
+                <code class="javascript" data-trim>
+$ngRedux.connect(mapStateToTarget, [mapDispatchToTarget])(target)
+                </code>
+                </pre>
+                    <aside class="notes">
+                        <pre>
+* the mapStateToTarget is run every time there is a change to the state of your application,
+as a result - you should keep an eye on the performance of these functions, as they have the potential to be called
+very frequently. 
+* todo: talk about re-select?
+* However, ng-redux will only merge the selected state on the controller if it changed
+* mapDispatchToTarget is optional, but if provided - will put the actions onto your controller so they are available
+from the view, 
+* The target can be 'this', $scope, or a function
+* todo: do I want to expand on the function approach? maybe use it as an example somewhere else but focus on
+the auto-binding for now
+* Lets see how this works in reality with our application
+                </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h3>The reality...</h3>
+                    <pre class="stretch">
+                <code class="javascript" data-trim>
+import lineupActions from '../../actions/lineup-actions';
+
+export default class LineupController {
+  constructor($ngRedux, $scope) {
+
+    let disconnect = $ngRedux.connect(
+        state => this.onUpdate(state),  // What we want to map to our target
+        lineupActions                   // Actions we want to map to our target
+        )(this);                        // Our target
+    
+    $scope.$on('$destroy', disconnect); // Cleaning house
+  }
+
+  onUpdate(state) {
+    return {
+      parties: state.lineup
+    };
+  }
+};
+                </code>
+                </pre>
+                    <aside class="notes">
+<ul>                        
+<li> Our mapStateToTarget function, called 'onUpdate' here is what is called every time that a change is made to the
+application state
+<li> The result of this function needs to be a plain JS object, so even though we are using immutable JS, we can't just
+return the 'map' of our lineup, or ng-redux will throw an error
+<li> This is done because ng-redux will simply merge the result of this function onto 'this' if a change is detected,
+as a result - we will now end up with a property on this controller called 'parties' that will remain in sync
+with the application state.
+</ul>
+                
+                    </aside>
+
+                </section>
+                <section>
+                <h3>The actions</h3>
+                <pre>
+                <code class="javascript" data-trim>
+export function joinLine(numberOfPeople) {
+  return {
+    type: PARTY_JOINED,
+    payload: {
+      partyId: getNextPartyId(),
+      numberOfPeople: numberOfPeople
+    }
+  };
+}
+
+export function leaveLine(id) { /* snip */ }
+
+export default {
+  joinLine, leaveLine
+};
+                </code>
+                </pre>
+                </section>
+                <section>
+                    <h1>Demo Time</h1>
+                    <aside class="notes">
+                        <pre>
+                    * Load up the sample application, but src/simple-party
+                    * Show basic parties in line
+                    * go over the logger details
+                    * then add 3 copies of the directive
+                    * show how things keep in sync between all 3 of them - no two-way binding
+                    * talk to how the ng-model isn't in sync across all 3 of them intentionally - at times you don't want
+                    the entire app to respond to every single little thing, but want some other action to trigger it
+
+                </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h3>Making something new, from something old</h3>
+                    <ul>
+                        <li>New feature derived from state</li>
+                        <li>Responds to changes in state</li>
+                        <li>Low complexity added</li>
+                    </ul>
+                    <aside class="notes">
+                        <pre>
+                    * So far we have covered configuring ngRedux, hooking it upto a controller and making a simple directive out of it.
+                      But, at this point we haven't done that much beyond a simple TODO-MVC type example of simply showing 
+                      items added to a list, but instead of adding text - we added a number.
+                    * One of the benifits of taking this approach to building out your application, is the ability to derive new components
+                      from the state of your application.
+                    * For example - lets add a 'total people in line' counter
+                    * Instead of needing to create a new control that listens to the joinedLine event, we instead create
+                      a componet that simply takes a slice of the application state, and represents it in a new way.
+
+
+                    </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h3>The template</h3>
+                    <pre>
+                    <code class="html" data-trim>
+<div>
+People in line: <span class="badge">{{lineupSummary.total}}</span>
+</div>
+
+                    </code>
+                    </pre>
+                </section>
+                <section>
+                    <h3>The controller</h3>
+                    <pre class="stretch">
+                    <code class="javascript" data-trim>
+import * as R from 'ramda';
+
+export default class LineupSummaryController {
+  constructor($ngRedux, $scope) {
+
+    let disconnect = $ngRedux.connect(state => this.onUpdate(state))(this);
+
+    $scope.$on('$destroy', disconnect);
+  }
+
+  onUpdate(state) {
+    return {
+      total: R.reduce((acc, val) => acc + val.numberOfPeople, 0)(state.lineup)
+    };
+  }
+};
+                    </code>
+                    </pre>
+                </section>
+                <section>
+                    <h3>Lets see that in action</h3>
+                    <aside class="notes">
+                        <pre>
+* Make sure 'parseInt' is out of the action
+* Load up browser to simple party
+* Get the component setup right
+* and oops - we have an error
+* Maybe talk to the 'typical flow' that some people do - tweak code, refresh, see what happens
+* Then - quick aside to introduce dev tools
+
+                </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h3>Boston ... lets fix that problem</h3>
+                    <ul>
+                        <li>Lets bring a bit of React into our application</li>
+                    </ul>
+                    <aside class="notes">
+                        * The redux dev tools are an exellent way to help debug your application and see what is going on * They were inititally developed for React, but can play nicely with Angular * Lets take a quick moment to set this up * Things are being wonky here with immutable -- maybe it is best to take it out for nwo
+                    </aside>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Components</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>"Smart"</th>
+                                <th>"Dumb"</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Location</th>
+                                <td>Top level, route handlers</td>
+                                <td>Middle and leaf components</td>
+                            </tr>
+                            <tr>
+                                <th>Aware of Redux</th>
+                                <td>Yes</td>
+                                <td>No</td>
+                            </tr>
+                            <tr>
+                                <th>To read data</th>
+                                <td>Subscribe to Redux State</td>
+                                <td>Read data from properties</td>
+                            </tr>
+                            <tr>
+                                <th>To change data</th>
+                                <td>Dispatch Redux Actions</td>
+                                <td>Invoke callbacks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <span class="sub"><a href="http://rackt.github.io/redux/docs/basics/UsageWithReact.html">Adopted from Redux Docs</a></span>
+                </section>
+                <section>
+                    <h2>A more complex component tree</h2>
+                    <ul>
+                        <li>DiningRoom
+                            <ul>
+                                <li>Smart, and passes data and callbacks down to menu</li>
+                            </ul>
+                        </li>
+                        <li>Table
+                            <ul>
+                                <li>Dumb - takes data and callbacks, and passes some down</li>
+                            </ul>
+                        </li>
+                        <li>Menu
+                            <ul>
+                                <li>Dumb, recieves data and callbacks</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <aside class="notes">
+                        <pre>
+* We are making our dining room component smart
+* It has knowledge about redux and ng redux
+* The table, and the menu components don't know anything about redux
+* The controller for the DiningRoom is where we get the slices of state
+and prepare it for the components
+* We also get the actions, and pass them down
+* This allows our Table and Menu components to be nothing but a template
+and some angular directive definition setup
+</pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>The smart dining room component</h2>
+                    </section>
+                <section>
+                    <h2>The table component</h2>
+                </section>
+                <section>
+                    <h2>The menu component</h2>
+                </section>
+                <section>
+                    <h2>In Summary...</h2>
+                    <ul>
+                        <li>DiningRoom knows about redux</li>
+                        <li>It passes down data and callbacks</li>
+                        <li>Table and Menu are only template + directive definition</li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h1>
+                     <span>Does it route?</span>
+                    </h1>
+                </section>
+                <section>
+                    <h2>ng-redux-ui-router</h2>
+                    <p>
+                        <a href="https://github.com/neilff/redux-ui-router">https://github.com/neilff/redux-ui-router</a>
+                    </p>
+                    <p>
+                        Or, npm install it
+                    </p>
+                    <ul>
+                        <li>Still in early development</li>
+                        <li>Use at own risk</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>What it does so far</h2>
+                    <ul>
+                        <li>Reducer to keep track of state</li>
+                        <li>Responds to
+                            <ul>
+                                <li> $stateChangeStart </li>
+                                <li> $stateChangeSuccess </li>
+                                <li> $stateChangeError </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>What it does so far</h2>
+                    <ul>
+                        <li>Actions for
+                            <ul>
+                                <li> state.go <span class="fragment fade-in highlight-current-blue">-&gt; stateGo </span></li>
+                                <li> state.reload <span class="fragment fade-in highlight-current-blue">-&gt; stateReload </span></li>
+                                <li> state.transitionTo <span class="fragment fade-in highlight-current-blue">-&gt; stateTransitionTo </span></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Why?</h3>
+                    <ul>
+                        <li>Dispatched actions should be the only things that change state</li>
+                        <li>Translates <span class="highlight-red">$stateChange</span> events to actions</li>
+                        <li>Dispatch actions to trigger state change</li>
+                    </ul>
+                    <aside class="notes">
+                        <pre>
+                * We were initially unsure of how to reconsile the 'ui-router' state with our application state
+                * Having our application trigger $state.go events seemed counter intuitive to what redux wants
+                * Needed a way to take external events (ie: changes in the browser bar), and cleanly update the state of our
+                application to reflect that
+                </pre>
+                    </aside>
+                </section>
+                <section>
+                    <h2>ui-router and components</h2>
+                    <ul class="fragment">
+                        <li>Abstract states = smart</li>
+                        <li>Leaf states = dumb</li>
+                    </ul>
+                    <aside class="notes">
+                        <ul>
+                        <li>Thinking of our ui router as a state tree</li>
+                        <li>How can we apply this to the ideas of components</li>
+                            <li>In our dining room component, deep pass down</li>
+                            <li>UI-router is a very common library to use</li>
+                            <li>With UI router, we can think of our app as a state tree</li>
+                            <li>Similar to how redux constructs a state tree</li>
+                            <li>Lets look at how we can tweak our orders component to have dumb and smart parts</li>
+                        </ul>
+                        <pre style="display:none">
+                    </pre>
+                        </class>
+                </section>
+                <section>
+                    <h2>A first pass approach</h2>
+                    <h3>everything is smart</h3>
+                    <aside class="notes">
+                        <ul>
+                            <li>My first attempt at this</li>
+                            <li>Everything knew about everything</li>
+                            <li>Lets take a look at it, then refactor</li>
+                        </ul>
+                    </aside>
+                </section>
+                <section>
+                    <h2>The state configuration</h2>
+                    <pre class="stretch">
+                <code class="javascript" data-trim>
+$stateProvider.state('app.orders', {
+  url: '/orders',
+  abstract: true,
+  views: {
+    'orders@app': {
+      template: '<div ui-view="orders"></div>',
+      controller: 'OrdersController',
+      controllerAs: 'orders'
+    }
+  }
+  }).state('app.orders.completed', {
+  url: '/completed',
+  views: {
+    'orders@app.orders': {
+// only need a tag here - seems tempting 
+      template: '<completed-orders></completed-orders>'
+    }
+  }
+  })                
+                </code>
+                </pre>
+                </section>
+                <section>
+                    <h2>Completed Orders Controller</h2>
+                    <pre class="stretch">
+                <code class="javascript" data-trim>
+export default class CompletedOrdersController {
+  constructor($ngRedux, $scope) {
+// But, it now needs to know about redux
+    let disconnect = $ngRedux.connect(
+        state => this.onUpdate(state), 
+        tableActions)(this);
+
+    $scope.$on('$destroy', () => disconnect());
+  }
+  mapOrders(order, menu) {
+/*
+Quite a bit going on here, it needs to know about the 
+structure of our application state.
+
+Not that reusable, is there a way we can do it better?
+ */
+    return {
+      tableId: order.id,
+      items: R.mapObjIndexed((value, key) => {
+        let menuItem = R.find(menuItem => menuItem.menuId === key)(menu);
+        return {
+          menuId: key,
+          qty: value,
+          description: menuItem.description,
+          price: menuItem.price,
+          total: value * menuItem.price
+        };
+      })(order.order)
+    };
+  }
+  onUpdate(state) {
+    let completedOrders = R.filter(n => n.status === ORDERED)(state.tables);
+    return {
+      orders: R.map(order => this.mapOrders(order, state.menu))(completedOrders)
+    };
+  }
+};
+
+                </code>
+                </pre>
+                </section>
+                <section>
+                    <h2>Pending Orders</h2>
+                    <h3>looks awfully similar</h3>
+                </section>
+                <section>
+                    <pre class="stretch">
+                <code class="javascript">
+export default class PendingOrdersController {
+  constructor($ngRedux, $scope) {
+
+    let disconnect = $ngRedux.connect(
+      state => this.onUpdate(state))(this);
+    $scope.$on('$destroy', () => disconnect());
+  }
+
+  mapOrders(order, menu) {
+
+    return {
+      tableId: order.id,
+      items: R.mapObjIndexed((value, key) => {
+        let menuItem = R.find(menuItem => menuItem.menuId === key)(menu);
+        return {
+          menuId: key,
+          qty: value,
+          description: menuItem.description,
+          price: menuItem.price,
+          total: value * menuItem.price
+        };
+      })(order.order)
+    };
+
+  }
+  onUpdate(state) {
+    let pendingOrders = R.filter(n => n.status === ORDERING)(state.tables);
+    return {
+      orders: R.map(order => this.mapOrders(order, state.menu))(pendingOrders)
+    };
+  }
+};                
+                </code>
+                </pre>
+                </section>
+                <section>
+                    <h2>Can we do better?</h2>
+                </section>
+                <section>
+                    <h2>Lets take a look</h2>
+                    <ul>
+                        <li class="fragment">Orders get a little smarter</li>
+                        <li class="fragment">Introduce a container</li>
+                        <li class="fragment">Components get dumber</li>
+                        <ul>
+                </section>
+                <section>
+                    <h2>State Configuration</h2>
+                    <h3>Smart orders component</h3>
+                    <pre class="stretch">
+                <code class="javascript" data-trim>
+ $stateProvider.state('app.orders', {
+        url: '/orders', // parent smart component
+        abstract: true,
+        views: {
+          'orders@app': {
+            template: '<div ui-view="orders"></div>',
+            controller: 'OrdersController',
+            controllerAs: 'orders'
+          }
+        }
+      }).state('app.orders.completed', {
+        url: '/completed', // container
+        views: {
+          'orders@app.orders': {
+            template: completedOrdersContainer
+          }
+        }
+      })            
+                </code>
+                </pre>
+                </section>
+                <section>
+                    <h2>The orders controller</h2>
+                    <pre class="stretch">
+<code class="javascript" data-trim>
+export default class OrdersController {
+  constructor($ngRedux, $scope) {
+
+    let disconnect = $ngRedux.connect(
+        state => this.onUpdate(state), 
+        tableActions)(this);
+
+    $scope.$on('$destroy', disconnect);
+  }
+
+  onUpdate(state) {
+    let orderMap = (menu, tables) => {
+
+      return R.map(table => {
+        return {
+          tableId: table.id,
+          items: Object.keys(table.order || {}).map(function (key) {
+            let menuItem = R.find(menuItem => menuItem.menuId === key)(menu);
+            return {
+              menuId: key,
+              qty: table.order[key],
+              description: menuItem.description,
+              price: menuItem.price,
+              total: table.order[key] * menuItem.price
+            };
+          })
+        };
+      })(tables);
+    };
+
+    return {
+      pending: orderMap(state.menu, 
+        R.filter(n => n.status === ORDERING)(state.tables)),
+      completed: orderMap(state.menu, 
+        R.filter(n => n.status === ORDERED)(state.tables))
+    };
+  }
+}
+
+</code>
+</pre>
+                </section>
+                <section>
+                    <h2>Container Template</h2>
+                    <pre>
+            <code class="html" data-trim>
+            &lt;completed-orders 
+  &lt;!-- Data passed down --&gt; 
+  orders="orders.completed"
+  &lt;!-- Callbacks passed down --&gt; 
+  on-add-item-to-order="orders.addItemToOrder(tableId,menuItemId)"
+  on-remove-item-from-order="
+    orders.removeItemFromOrder(tableId,menuItemId)"
+  on-deliver-order="orders.deliverOrder(tableId)"&gt;
+&lt;/completed-orders&gt;
+
+            </code>
+            </pre>
+                </section>
+                <section>
+                    <h2>Role of the container</h2>
+                    <ul>
+                        <li>Knows about orders from the parent '<span style="color:red">app.orders</span>' state</li>
+                        <li>Passes data down to the component</li>
+                        <li>Passes callbacks down to the component</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>The component definition</h2>
+                    <pre>
+            <code class="javascript" data-trim>
+import completedOrdersTemplate from './completed-orders-tpl.html';
+
+export default angular
+  .module('app.components.completedOrders', [])
+  .directive('completedOrders', () => {
+    return {
+      restrict: 'E',
+      template: completedOrdersTemplate,
+      scope: {
+        orders: '=',
+        deliverOrder: '&onDeliverOrder',
+        addItemToOrder: '&onAddItemToOrder',
+        removeItemFromOrder: '&onRemoveItemFromOrder'
+      }
+    };
+  }).name;
+            </code>
+            </pre>
+                </section>
+                <section>
+                    <h2>Role of the completed orders component</h2>
+                    <p class="fragment" data-fragment-index="1">Render Data</p>
+                    <pre class="fragment" data-fragment-index="1">
+<code class="html" data-trim>
+  &lt;div ng-repeat="order in orders"&gt;
+        Table: {{order.tableId}} 
+
+</code>
+</pre>
+                    <p class="fragment" data-fragment-index="2">
+                        Invoke Callbacks
+                    </p>
+                    <pre class="fragment" data-fragment-index="2">
+            <code class="html" data-trim>
+&lt;button type="button" 
+    ng-click="addItemToOrder(
+                        {tableId:order.tableId, 
+                          menuItemId:item.menuId})"&gt;+
+&lt;/button&gt;            
+            </code>
+            </pre>
+                </section>
+                <section>
+                    <h2>The controller?</h2>
+                    <p class="fragment">
+                        GONE!
+                    </p>
+                </section>
+                <section>
+                    <h2>The result...</h2>
+                    <ul>
+                        <li>Orders got smarter</li>
+                        <li>Completed Orders got dumber
+                            <ul class="fragment">
+                                <li>Only cares about the data, <i>not</i> where it came from</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Unit testing our <i>mapStateToTarget</i></h2>
+                    <ul class="fragment">
+                        <li>Potential for quite a bit of logic to land here</li>
+                        <li>Can we isoalte it, and make it testable?</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Introducing Selectors</h2>
+                    <ul>
+                        <li>Compute derived data</li>
+                        <li>Efficent</li>
+                        <li>Composable</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Step 1. decompose our mapToState functionality</h2>
+                    <pre>
+            <code class="javascript" data-trim>
+let orderMap = (menu, tables) => {
+
+  return R.map(table => {
+    return {
+      tableId: table.id,
+      items: Object.keys(table.order || {}).map(function (key) {
+        let menuItem = R.find(menuItem => menuItem.menuId === key)(menu);
+        return {
+          menuId: key,
+          qty: table.order[key],
+          description: menuItem.description,
+          price: menuItem.price,
+          total: table.order[key] * menuItem.price
+        };
+      })
+    };
+  })(tables);
+};
+
+let menuSelector = state => state.menu;
+let pendingOrders = state => R.filter(n => n.status === ORDERING)(state.tables);
+let completedOrders = state => R.filter(n => n.status === ORDERED)(state.tables);
+
+            </code>
+            </pre>
+                </section>
+                <section>
+                    <h2>Step 2. Create a selector with re-select</h2>
+                    <pre>
+<code class="javascript" data-trim>
+let ordersSelector = 
+  createSelector(
+    [menuSelector,    // can be an array of functions
+    pendingOrders,    // and other selectors
+    completedOrders], // will memoize and only execute if
+                      // any of the paramaters change
+    (menu, pending, completed) => {
+    return {
+      pending: orderMap(menu, pending),
+      completed: orderMap(menu, completed)
+    };
+});
+</code>
+</pre>
+                </section>
+                <section>
+                    <h2>Step 3. Update our onUpdate</h2>
+                    <pre>
+<code class="javascript" data-trim>
+import ordersSelector from 'orders-selector';
+export default class OrdersController {
+  constructor($ngRedux, $scope) {
+
+    let disconnect = $ngRedux.connect(state => this.onUpdate(state), tableActions)(this);
+
+    $scope.$on('$destroy', disconnect);
+  }
+
+  onUpdate(state) {
+    return ordersSelector(state);
+
+  }
+
+}
+</code>
+</pre>
+                </section>
+                <section>
+                    <h2>3.1 Or just replace it</h2>
+                    <pre>
+<code class="javascript" data-trim>
+import ordersSelector from 'orders-selector';
+export default class OrdersController {
+  constructor($ngRedux, $scope) {
+
+    let disconnect = $ngRedux.connect(
+      state => ordersSelector(state), 
+      tableActions)(this);
+
+    $scope.$on('$destroy', disconnect);
+  }
+}
+</code>
+</pre>
+                </section>
+                <section>
+                    <h2>Now to test it</h2>
+                    <p>
+                        ... yes this should have been Step 1.
+                    </p>
+                </section>
+                <section>
+                <h2>Setup our mock state</h2>
+                <pre>
+                <code class="javascript" data-trim>
+const mockState = {
+  menu: [{
+    menuId: 'pancake', description: 'Stack of Pancakes',
+    stock: 50, price: 1.99
+    }],
+  tables: [{
+    id: 'tableWithPending', status: ORDERING,
+    order: {pancake: 1} },
+    {
+    id: 'tableWithCompleted',  status: ORDERED, 
+    order: {pancake: 2}}]
+  };                
+                </code>
+                </pre>
+                </section>
+                <section>
+                <h2>Write tests</h2>
+                    <pre class="stretch">
+                <code class="javascript" data-trim>
+it('should convert order to a collection of items', () => {
+  const result = ordersSelector(mockState);
+  const pendingOrders = result.pending[0];
+  const completedOrders = result.completed[0];
+
+  expect(pendingOrders).to.have.property('items');
+  expect(completedOrders).to.have.property('items');
+  });
+
+it('should calculate the total of the items in the order', () => {
+  const result = ordersSelector(mockState);
+  const pendingItems = result.pending[0].items;
+  const completedItems = result.completed[0].items;
+
+  expect(pendingItems[0].total).to.be.equal(1.99);
+  expect(completedItems[0].total).to.be.equal(1.99 * 2);
+  });
+                </code>
+                </pre>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h3>In Summary</h3>
+                    <ul>
+                        <li>Store your application state in one place</li>
+                        <li>Derive data from this state to build new features</li>
+                        <li>Treat your UI as a represntation of state</li>
+                        <li>Use Redux as your state container</li>
+                        <li>Use ng-redux for Angular bindings</li>
+                    </ul>
+                </section>
+                <section data-transition="fade-in slide-out">
+                <h2>Some extra Resources</h2>
+                <p>Small demo apps with Redux, ngRedux and Angular</p>
+                </p>
+                <ul>
+                <li><a href="https://github.com/neilff/redux-examples">github.com/neilff/redux-examples</a>
+                </li>
+                </ul>
+                </section>
+                <section data-transition="fade-in slide-out">
+                <h2>Some extra Resources</h2>
+                <p>Redux Documentation</p>
+                </p>
+
+                <ul>
+                <li><a href="http://rackt.github.io/redux/">rackt.github.io/redux</a>
+                </li>
+                </ul>
+                </section>
+                <section data-transition="fade-in slide-out">
+                <h2>Some extra Resources</h2>
+                <p>ng-redux - Angular bindings for Redux</p>
+                </p>
+
+                <ul>
+                <li><a href="https://github.com/wbuchwalter/ng-redux">github.com/wbuchwalter/ng-redux</a>
+                </li>
+                </ul>
+                </section>
+                 <section data-transition="fade-in slide-out">
+                <h2>Some extra Resources</h2>
+                <p>Awsome Redux - collection of Redux utilities</p>
+                </p>
+
+                <ul>
+                <li><a href="https://github.com/xgrommx/awesome-redux">github.com/xgrommx/awesome-redux</a>
+                </li>
+                </ul>
+                </section>
+                <section>
+                    <h2>Thanks!</h2>
+                    <ul>
+                        <li>email: <a href="mailto:evan@rangle.io">evan@rangle.io</a></li>
+                        <li>Github: <a href="http://www.github.com/e-schultz">http://www.github.com/e-schultz</a></li>
+                        <li>Twitter: <a href="https://twitter.com/e_p82">@e_p82</a></li>
+                        <li><a href="http://www.reactiflux.com/?q=rjs">Reactiflux Slack</a>: e-schultz</li>
+                    </ul>
+                </section>
+
+            </section>
+            <section>
+            <h1>Questions?</h1>
+            </section>
+        </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    <script>
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        //width: '100%',
+        //height: '100%',
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        parallaxBackgroundImage: 'http://papers.co/wallpaper/' +
+            'papers.co-vd52-abstract-dark-geometric-line-pattern-36-3840x2400-4k-wallpaper.jpg',
+        parallaxBackgroundSize: '3840px 2400px',
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [{
+            src: 'lib/js/classList.js',
+            condition: function() {
+                return !document.body.classList;
+            }
+        }, {
+            src: 'plugin/markdown/marked.js',
+            condition: function() {
+                return !!document.querySelector('[data-markdown]');
+            }
+        }, {
+            src: 'plugin/markdown/markdown.js',
+            condition: function() {
+                return !!document.querySelector('[data-markdown]');
+            }
+        }, {
+            src: 'plugin/highlight/highlight.js',
+            async: true,
+            condition: function() {
+                return !!document.querySelector('pre code');
+            },
+            callback: function() {
+                hljs.initHighlightingOnLoad();
+            }
+        }, {
+            src: 'plugin/zoom-js/zoom.js',
+            async: true
+        }, {
+            src: 'plugin/notes/notes.js',
+            async: true
+        }]
+    });
+    </script>
+</body>
+
+</html>
