@@ -9,3 +9,7 @@
 
 * [Neil Fenton](https://github.com/neilff)
 * [William Buchwalter](https://github.com/wbuchwalter)
+
+# Demo App
+* [TrendyBrunch](https://github.com/e-schultz/ng-summit-redux)
+* More Examples - [Redux Examples](https://github.com/neilff/redux-examples)
