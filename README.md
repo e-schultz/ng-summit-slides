@@ -3,7 +3,7 @@
 * git clone
 * npm install
 * npm start
-* PDF of slides available under Releases
+* [PDF of slides available under Releases](https://github.com/e-schultz/ng-summit-slides/releases/tag/v1)
 
 # Special Thnaks
 
