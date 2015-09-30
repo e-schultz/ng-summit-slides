@@ -5,3 +5,7 @@
 * npm start
 * PDF of slides available under Releases
 
+# Special Thnaks
+
+* [Neil Fenton](https://github.com/neilff)
+* [William Buchwalter](https://github.com/wbuchwalter)
